@@ -6,7 +6,14 @@ const uploadFile = require('../controller/upload'); // Mengimpor controller uplo
 
 // routes/upload.js
 router.post('/', upload.single('image'), (req, res, next) => {
-    console.log('Received file:', req.file); // Tambahkan log ini
+    console.log('Body request:', req.body);  // Log body request
+    console.log('Received file:', req.file);  // Log file yang diterima
+
+    // Mengecek apakah file ada
+    if (!req.file) {
+        return res.status(400).json({ message: 'File upload failed' });
+    }
+    
     next();
 }, uploadFile);
 

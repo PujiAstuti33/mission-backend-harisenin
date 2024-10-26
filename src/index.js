@@ -32,27 +32,6 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const timestamp = new Date().getTime();
-        const originalname = file.originalname;
-        cb(null, `${timestamp}-${originalname}`);
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|gif/;
-    const mimetype = filetypes.test(file.mimetype);
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-    if (mimetype && extname) {
-        return cb(null, true);
-    }
-    cb(new Error('Error: File upload hanya dapat berupa gambar!'));
-};
 
 // Initialize express
 const app = express();

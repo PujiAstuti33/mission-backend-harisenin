@@ -73,12 +73,20 @@ CREATE TABLE `orders` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `pembayarans` (
+CREATE TABLE `pembayaran` (
     `ID_Pembayaran` INTEGER NOT NULL AUTO_INCREMENT,
     `ID_User` INTEGER NOT NULL,
     `ID_Order` INTEGER NOT NULL,
 
     PRIMARY KEY (`ID_Pembayaran`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `uploads` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `filename` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -100,7 +108,7 @@ ALTER TABLE `orders` ADD CONSTRAINT `orders_ID_User_fkey` FOREIGN KEY (`ID_User`
 ALTER TABLE `orders` ADD CONSTRAINT `orders_ID_Paket_fkey` FOREIGN KEY (`ID_Paket`) REFERENCES `pakets`(`ID_Paket`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `pembayarans` ADD CONSTRAINT `pembayarans_ID_User_fkey` FOREIGN KEY (`ID_User`) REFERENCES `users`(`ID_User`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `pembayaran` ADD CONSTRAINT `pembayaran_ID_User_fkey` FOREIGN KEY (`ID_User`) REFERENCES `users`(`ID_User`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `pembayarans` ADD CONSTRAINT `pembayarans_ID_Order_fkey` FOREIGN KEY (`ID_Order`) REFERENCES `orders`(`ID_Order`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `pembayaran` ADD CONSTRAINT `pembayaran_ID_Order_fkey` FOREIGN KEY (`ID_Order`) REFERENCES `orders`(`ID_Order`) ON DELETE RESTRICT ON UPDATE CASCADE;
