@@ -13,7 +13,7 @@ router.post('/', upload.single('image'), (req, res, next) => {
     if (!req.file) {
         return res.status(400).json({ message: 'File upload failed' });
     }
-    
+
     next();
 }, uploadFile);
 
