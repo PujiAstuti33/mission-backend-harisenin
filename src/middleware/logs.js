@@ -7,7 +7,7 @@ const logRequest = (req, res, next) => {
         next();
     } catch (error) {
         console.error('Terjadi kesalahan dalam middleware logRequest:', error);
-        next(error); // Pastikan untuk memanggil next(error) jika terjadi kesalahan
+        next(error); 
     }
 }
 

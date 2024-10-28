@@ -3,9 +3,6 @@ require('dotenv').config();
 const PORT = process.env.PORT || 5173;
 const express = require('express');
 const morgan = require('morgan');
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
@@ -21,17 +18,10 @@ const episodeMovieRoutes = require('./routes/episode_movie');
 const paketsRoutes = require('./routes/pakets');
 const ordersRoutes = require('./routes/orders');
 const pembayaranRoutes = require('./routes/pembayaran');
-const uploadRoutes = require('./routes/upload');
 
 // Middleware
 const middlewareLogRequest = require('./middleware/logs');
-
-// Define multer storage and file filter
-const uploadDir = 'upload'; // Tentukan folder upload
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
+const upload = require('./middleware/multer')
 
 // Initialize express
 const app = express();
@@ -40,9 +30,8 @@ const app = express();
 app.use(morgan('dev'));
 app.use(middlewareLogRequest);
 app.use(express.json());
+app.use('/assets', express.static('upload/images'));
 
-// Routes
-app.use("/upload", uploadRoutes);
 
 // Routing with prisma
 app.use('/users', usersRoutes);
@@ -56,27 +45,13 @@ app.use('/pakets', paketsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/pembayaran', pembayaranRoutes);
 
-// Handling multer errors and other errors
-app.use((err, req, res, next) => {
-    if (err instanceof multer.MulterError) {
-        console.error('Multer Error:', err.message); // Log error multer
-        res.status(400).json({ message: err.message });
-    } else if (err) {
-        console.error('Error:', err.message); // Log error umum
-        res.status(500).json({ message: err.message });
-    } else {
-        next();
-    }
-});
+app.post('/upload',upload.single('image'), (req, res) => {
+    res.json({
+        message: 'Upload berhasil'
+    })
+})
 
-// 404 Not Found
-app.use((req, res) => {
-    res.status(404).json({
-        message: 'Not Found'
-    });
-});
 
-// Server listen
 app.listen(PORT, () => {
     console.log(`Server berhasil di running di port ${PORT}`);
 });
