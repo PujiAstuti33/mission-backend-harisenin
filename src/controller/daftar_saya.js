@@ -2,7 +2,9 @@ const DaftarSayaModel = require('../models/daftar_saya');
 
 const getAllDaftarSaya = async (req, res) => {
     try {
-        const [data] = await DaftarSayaModel.getAllDaftarSaya();
+        // Mengambil query params dari request
+        const queryParams = req.query;
+        const [data] = await DaftarSayaModel.getAllDaftarSaya(queryParams);
         res.json({
             message: 'GET all Daftar Saya success',
             data: data,
