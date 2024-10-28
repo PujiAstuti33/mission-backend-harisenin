@@ -35,7 +35,6 @@ CREATE TABLE `series_film` (
     `Judul` VARCHAR(255) NOT NULL,
     `Deskripsi` TEXT NOT NULL,
     `ID_Genre` INTEGER NOT NULL,
-    `Tipe` VARCHAR(50) NOT NULL,
 
     PRIMARY KEY (`ID_SeriesFilm`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -82,11 +81,15 @@ CREATE TABLE `pembayaran` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `uploads` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `filename` VARCHAR(191) NOT NULL,
+CREATE TABLE `movies` (
+    `ID_Movie` INTEGER NOT NULL AUTO_INCREMENT,
+    `Judul` VARCHAR(255) NOT NULL,
+    `Genre` VARCHAR(100) NOT NULL,
+    `ReleaseYear` INTEGER NOT NULL,
+    `Created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `Updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`ID_Movie`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey

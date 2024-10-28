@@ -3,9 +3,16 @@ const EpisodeMovieModel = require('../models/episode_movie');
 const getAllEpisodeMovies = async (req, res) => {
     try {
         const [data] = await EpisodeMovieModel.getAllEpisodeMovies();
+
+        // Format durasi menjadi "X menit"
+        const formattedData = data.map(episode => ({
+            ...episode,
+            Durasi: `${episode.Durasi} menit`, // Menambahkan label "menit" pada durasi
+        }));
+
         res.json({
             message: 'GET all Episode Movies success',
-            data: data,
+            data: formattedData, // Menggunakan data yang sudah diformat
         });
     } catch (error) {
         res.status(500).json({

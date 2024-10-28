@@ -50,7 +50,6 @@ model SeriesFilm {
   Judul         String         @db.VarChar(255)
   Deskripsi     String         @db.Text
   ID_Genre      Int
-  Tipe          String         @db.VarChar(50)
   Genre         Genre          @relation(fields: [ID_Genre], references: [ID_Genre])
   Episodes      EpisodeMovie[]
 
@@ -100,3 +99,13 @@ model Pembayaran {
   @@map("pembayaran")
 }
 
+model Movies {
+  ID_Movie       Int       @id @default(autoincrement())
+  Judul          String    @db.VarChar(255)
+  Genre          String    @db.VarChar(100)
+  ReleaseYear    Int
+  Created_at     DateTime  @default(now())
+  Updated_at     DateTime  @default(now()) @updatedAt
+
+  @@map("movies")
+}

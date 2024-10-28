@@ -2,13 +2,21 @@ const MoviesModel = require('../models/movies');
 
 const getAllMovies = async (req, res) => {
     try {
-        const [movies] = await MoviesModel.getAllMovies();
+        const filters = {
+            genre: req.query.genre,
+            releaseYear: req.query.releaseYear,
+            search: req.query.search,
+            sortBy: req.query.sortBy, // Misalnya 'judul' atau 'releaseYear'
+        };
+
+        const [movies] = await MoviesModel.getAllMovies(filters); // Mengirimkan filters ke model
 
         res.json({
             message: 'GET all movies success',
             data: movies
         });
     } catch (error) {
+        console.error(error); // Menambahkan log untuk debugging
         res.status(500).json({
             message: 'Server Error',
             serverMessage: error,
@@ -35,7 +43,7 @@ const getMovieById = async (req, res) => {
 const createNewMovie = async (req, res) => {
     const {body} = req; 
 
-    if (!body.title || !body.genre || !body.releaseYear) {
+    if (!body.judul || !body.genre || !body.releaseYear) {
         return res.status(400).json({
             message: 'Data yang dikirim tidak lengkap',
             data: null,
