@@ -6,6 +6,8 @@ CREATE TABLE `users` (
     `Email` VARCHAR(100) NOT NULL,
     `Password` VARCHAR(100) NOT NULL,
     `Profile_Picture` VARCHAR(255) NULL,
+    `Token` VARCHAR(255) NULL,
+    `isVerified` BOOLEAN NULL DEFAULT false,
     `Created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`ID_User`)
@@ -66,7 +68,7 @@ CREATE TABLE `orders` (
     `ID_User` INTEGER NOT NULL,
     `ID_Paket` INTEGER NOT NULL,
     `Tanggal_Order` DATETIME(3) NOT NULL,
-    `Status_Order` VARCHAR(50) NOT NULL,
+    `Status_Order` ENUM('Berhasil', 'Gagal', 'Belum_Bayar') NOT NULL,
 
     PRIMARY KEY (`ID_Order`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -76,6 +78,7 @@ CREATE TABLE `pembayaran` (
     `ID_Pembayaran` INTEGER NOT NULL AUTO_INCREMENT,
     `ID_User` INTEGER NOT NULL,
     `ID_Order` INTEGER NOT NULL,
+    `jenis_pembayaran` ENUM('Transfer_Bank', 'E_Wallet', 'Debit_Card', 'Kredit_Card') NOT NULL,
 
     PRIMARY KEY (`ID_Pembayaran`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

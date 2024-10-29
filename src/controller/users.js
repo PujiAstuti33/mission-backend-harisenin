@@ -1,4 +1,6 @@
 const UserModel = require('../models/users');
+const sendMail = require('../config/mail');
+const { v4: uuidv4 } = require('uuid');
 
 // Mendapatkan semua pengguna
 const getAllUsers = async (req, res) => {
@@ -18,56 +20,56 @@ const getAllUsers = async (req, res) => {
 
 // Mendaftarkan pengguna
 const register = async (req, res) => {
-    const { body } = req;
-    if (!body.fullname || !body.username || !body.email || !body.password) {
+    const { fullname, username, email, password } = req.body;
+
+    // Validasi input
+    if (!fullname || !username || !email || !password) {
         return res.status(400).json({
-            message: 'Anda mengirimkan data yang salah',
-            data: null,
+            message: 'Data tidak lengkap',
         });
     }
 
     try {
-        const existingUser = await UserModel.findByEmail(body.email);
+        // Cek apakah email sudah terdaftar
+        const existingUser = await UserModel.findByEmail(email);
         if (existingUser[0].length > 0) {
-            return res.status(400).json({ message: 'Email sudah terdaftar' });
+            return res.status(200).json({ message: 'Email sudah terdaftar' });
         }
 
-        await UserModel.createNewUser(body);
+        // Buat token untuk verifikasi
+        const token = uuidv4();
+
+        // Simpan pengguna baru dengan token ke database
+        await UserModel.createNewUser({ fullname, username, email, password, token });
+
+        // Kirim email verifikasi
+        await sendMail(email, token);
+
         return res.status(201).json({
-            message: 'REGISTER success',
-            data: {
-                fullname: body.fullname,
-                username: body.username,
-                email: body.email,
-            },
+            message: 'REGISTER success. Silakan cek email untuk verifikasi.',
+            data: { fullname, username, email },
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: 'Terjadi kesalahan saat mendaftar pengguna',
-            serverMessage: error,
+            message: 'Terjadi kesalahan saat mendaftar user',
         });
     }
 };
 
 // Login pengguna
 const login = async (req, res) => {
-    const { body } = req;
-    if (!body.email || !body.password) {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
         return res.status(400).json({
-            message: 'Anda mengirimkan data yang salah',
-            data: null,
+            message: 'Data tidak lengkap',
         });
     }
 
     try {
-        const user = await UserModel.findByEmail(body.email);
-        if (user[0].length === 0) {
-            return res.status(401).json({ message: 'Email atau password salah' });
-        }
-
-        const isValidPassword = body.password === user[0][0].Password;
-        if (!isValidPassword) {
+        const user = await UserModel.findByEmail(email);
+        if (user[0].length === 0 || password !== user[0][0].Password) {
             return res.status(401).json({ message: 'Email atau password salah' });
         }
 
@@ -83,8 +85,7 @@ const login = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: 'Terjadi kesalahan saat login pengguna',
-            serverMessage: error,
+            message: 'Terjadi kesalahan saat login user',
         });
     }
 };
@@ -98,16 +99,12 @@ const updateUser = async (req, res) => {
         await UserModel.updateUser(body, idUser);
         res.json({
             message: 'UPDATE user success',
-            data: {
-                id: idUser,
-                ...body,
-            },
+            data: { id: idUser, ...body },
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({
             message: 'Server Error',
-            serverMessage: error,
         });
     }
 };
@@ -119,25 +116,40 @@ const deleteUser = async (req, res) => {
     try {
         await UserModel.deleteUser(idUser);
         res.json({
-            message: 'DELETE user success',
-            data: null,
+            message: 'User berhasil dihapus',
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({
             message: 'Server Error',
-            serverMessage: error,
         });
     }
 };
 
 // Verifikasi email pengguna
 const verifyEmail = async (req, res) => {
+    const { token } = req.query;
+
+    // Log token untuk debugging
+    console.log("Received token:", token); // Ini akan menunjukkan token yang diterima
+
+    // Pastikan token tidak kosong
+    if (!token) {
+        return res.status(400).json({ message: 'Token tidak ditemukan' });
+    }
+
     try {
-        // Tambahkan logika verifikasi email di sini
+        // Temukan pengguna berdasarkan token
+        const user = await UserModel.findByToken(token);
+        if (!user) {
+            return res.status(400).json({ message: 'Token tidak valid' });
+        }
+
+        // Aktifkan pengguna
+        await UserModel.activateUser(user.ID_User);
         res.status(200).json({ message: 'Email berhasil diverifikasi' });
     } catch (error) {
-        res.status(500).json({ message: 'Terjadi kesalahan', serverMessage: error });
+        res.status(500).json({ message: 'Terjadi kesalahan' });
     }
 };
 

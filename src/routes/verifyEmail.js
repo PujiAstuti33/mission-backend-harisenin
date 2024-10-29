@@ -3,7 +3,7 @@ const UsersController = require('../controller/users');
 
 const router = express.Router();
 
-// CREATE - POST (REGISTER / VERIFY EMAIL)
-router.post('/verify-email', UsersController.verifyEmail);
+// Verifikasi email melalui link
+router.get('/', UsersController.verifyEmail);
 
 module.exports = router;

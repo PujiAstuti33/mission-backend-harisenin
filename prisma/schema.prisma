@@ -13,6 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Status_order {
+  Berhasil
+  Gagal
+  Belum_Bayar
+}
+
+enum Jenis_pembayaran {
+  Transfer_Bank
+  E_Wallet
+  Debit_Card
+  Kredit_Card
+}
+
+
 model User {
   ID_User         Int          @id @default(autoincrement())
   Fullname        String       @db.VarChar(100)
@@ -20,6 +34,8 @@ model User {
   Email           String       @db.VarChar(100)
   Password        String       @db.VarChar(100)
   Profile_Picture String?      @db.VarChar(255)
+  Token           String?      @db.VarChar(255) // Menambahkan kolom token opsional
+  isVerified      Boolean?     @default(false)
   Created_at      DateTime     @default(now())
   DaftarSaya      DaftarSaya[]
   Orders          Order[]
@@ -77,27 +93,29 @@ model Paket {
 }
 
 model Order {
-  ID_Order      Int      @id @default(autoincrement())
+  ID_Order      Int           @id @default(autoincrement())
   ID_User       Int
   ID_Paket      Int
   Tanggal_Order DateTime
-  Status_Order  String   @db.VarChar(50)
-  user       User         @relation(fields: [ID_User], references: [ID_User])
-  paket      Paket        @relation(fields: [ID_Paket], references: [ID_Paket], name: "PaketOrders") 
-  Pembayaran Pembayaran[]
+  Status_Order  Status_order
+  user          User          @relation(fields: [ID_User], references: [ID_User])
+  paket         Paket         @relation(fields: [ID_Paket], references: [ID_Paket], name: "PaketOrders") 
+  Pembayaran    Pembayaran[]
 
   @@map("orders")
 }
 
 model Pembayaran {
-  ID_Pembayaran Int   @id @default(autoincrement())
-  ID_User       Int
-  ID_Order      Int
-  user          User  @relation(fields: [ID_User], references: [ID_User])
-  order         Order @relation(fields: [ID_Order], references: [ID_Order])
+  ID_Pembayaran    Int              @id @default(autoincrement())
+  ID_User          Int
+  ID_Order         Int
+  jenis_pembayaran Jenis_pembayaran
+  user             User             @relation(fields: [ID_User], references: [ID_User])
+  order            Order            @relation(fields: [ID_Order], references: [ID_Order])
 
   @@map("pembayaran")
 }
+
 
 model Movies {
   ID_Movie       Int       @id @default(autoincrement())

@@ -8,9 +8,9 @@ const getAllUsers = () => {
 
 // Membuat pengguna baru
 const createNewUser = (body) => {
-    const SQLQuery = `INSERT INTO users (Fullname, Username, Email, Password) 
-                      VALUES (?, ?, ?, ?)`;
-    return dbPool.execute(SQLQuery, [body.fullname, body.username, body.email, body.password]);
+    const SQLQuery = `INSERT INTO users (Fullname, Username, Email, Password, Token) 
+                      VALUES (?, ?, ?, ?, ?)`; // Menambahkan Token di sini
+    return dbPool.execute(SQLQuery, [body.fullname, body.username, body.email, body.password, body.token]);
 };
 
 // Memperbarui informasi pengguna
@@ -33,9 +33,15 @@ const findByEmail = (email) => {
     return dbPool.execute(SQLQuery, [email]);
 };
 
-// Mencari pengguna berdasarkan ID
-const findById = (idUser) => {
-    const SQLQuery = 'SELECT * FROM users WHERE ID_User = ?';
+// Mencari pengguna berdasarkan token
+const findByToken = (token) => {
+    const SQLQuery = 'SELECT * FROM users WHERE Token = ?';
+    return dbPool.execute(SQLQuery, [token]);
+};
+
+// Mengaktifkan akun pengguna berdasarkan ID
+const activateUser = (idUser) => {
+    const SQLQuery = 'UPDATE users SET IsActive = 1 WHERE ID_User = ?'; // Asumsikan ada field IsActive
     return dbPool.execute(SQLQuery, [idUser]);
 };
 
@@ -45,5 +51,6 @@ module.exports = {
     updateUser,
     deleteUser,
     findByEmail,
-    findById,
+    findByToken,
+    activateUser,
 };
